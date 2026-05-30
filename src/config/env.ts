@@ -12,7 +12,7 @@ const envSchema = z.object({
 		.enum(["development", "test", "production"])
 		.default("development"),
 	DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-	DATABASE_SSL: z.stringbool().default(true),
+	DATABASE_SSL_ENABLED: z.stringbool().default(true),
 	LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
 
