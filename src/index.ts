@@ -3,11 +3,13 @@ import { Elysia } from "elysia";
 import { AppModule } from "./app.module";
 import { RaffleServiceProvider } from "./features/raffle/raffle.providers";
 import { createRaffleRoutes } from "./features/raffle/raffle.routes";
+import { errorHandlerPlugin } from "./plugins/error-handler.plugin";
 
 export async function createHttpApp() {
 	const resolve = await createApplication(AppModule);
 	const raffleService = resolve(RaffleServiceProvider);
 	return new Elysia()
+		.use(errorHandlerPlugin)
 		.get("/health", () => ({ status: "ok" }))
 		.use(createRaffleRoutes(raffleService));
 }

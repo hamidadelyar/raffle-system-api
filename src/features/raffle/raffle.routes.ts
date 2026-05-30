@@ -1,4 +1,5 @@
 import { Elysia, t } from "elysia";
+import { AppError } from "../../errors/app-error";
 import type { RaffleService } from "./raffle.service";
 
 export function createRaffleRoutes(raffleService: RaffleService) {
@@ -11,16 +12,10 @@ export function createRaffleRoutes(raffleService: RaffleService) {
 		})
 		.get(
 			"/:id",
-			async ({ params, set }) => {
+			async ({ params }) => {
 				const raffle = await raffleService.getRaffle(params.id);
 				if (!raffle) {
-					set.status = 404;
-					return {
-						error: {
-							code: "RAFFLE_NOT_FOUND",
-							message: "Raffle not found",
-						},
-					};
+					throw new AppError("RAFFLE_NOT_FOUND", "Raffle not found", 404);
 				}
 				return {
 					data: raffle,
