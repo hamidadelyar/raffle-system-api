@@ -3,7 +3,8 @@
 	"version": "1.0.50",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "bun run --watch src/index.ts"
+		"dev": "bun --watch src/index.ts",
+		"dev:portless": "portless run bun --watch src/index.ts"
 	},
 	"dependencies": {
 		"dotenv": "^17.4.2",
@@ -16,6 +17,7 @@
 		"@types/pg": "^8.20.0",
 		"bun-types": "latest",
 		"drizzle-kit": "^0.31.10",
+		"portless": "^0.13.1",
 		"tsx": "^4.22.3"
 	},
 	"module": "src/index.js"
