@@ -1,10 +1,14 @@
 import { Elysia, t } from "elysia";
-import { AppError } from "../../errors/app-error";
+import { authPlugin } from "../../plugins/auth.plugin";
 import type { RaffleService } from "./raffle.service";
 
 export function createRaffleRoutes(raffleService: RaffleService) {
 	return new Elysia({ prefix: "/raffles" })
-		.get("/", async () => {
+		.use(authPlugin)
+		.get("/", async ({ getAuthenticatedUser }) => {
+			const { id } = await getAuthenticatedUser();
+			console.log({ id });
+
 			const raffles = await raffleService.listRaffles();
 			return {
 				data: raffles,
@@ -12,10 +16,11 @@ export function createRaffleRoutes(raffleService: RaffleService) {
 		})
 		.get(
 			"/:id",
-			async ({ params }) => {
+			async ({ params, status, getAuthenticatedUser }) => {
+				const { id } = await getAuthenticatedUser();
 				const raffle = await raffleService.getRaffle(params.id);
 				if (!raffle) {
-					throw new AppError("RAFFLE_NOT_FOUND", "Raffle not found", 404);
+					throw status(404);
 				}
 				return {
 					data: raffle,

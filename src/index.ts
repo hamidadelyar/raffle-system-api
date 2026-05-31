@@ -1,3 +1,4 @@
+import { openapi } from "@elysia/openapi";
 import { createApplication } from "difunkt";
 import { Elysia } from "elysia";
 import { AppModule } from "./app.module";
@@ -9,6 +10,7 @@ export async function createHttpApp() {
 	const resolve = await createApplication(AppModule);
 	const raffleService = resolve(RaffleServiceProvider);
 	return new Elysia()
+		.use(openapi())
 		.use(errorHandlerPlugin)
 		.get("/health", () => ({ status: "ok" }))
 		.use(createRaffleRoutes(raffleService));
