@@ -5,7 +5,7 @@ import type { RaffleService } from "./raffle.service";
 export function createRaffleRoutes(raffleService: RaffleService) {
 	return new Elysia({ prefix: "/raffles" })
 		.use(authPlugin)
-		.get("/", async ({ user }) => {
+		.get("/", async () => {
 			const raffles = await raffleService.listRaffles();
 			return {
 				data: raffles,

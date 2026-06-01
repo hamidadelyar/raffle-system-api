@@ -30,13 +30,19 @@ function getUserFromAuthorizationHeader(
 	}
 	const token = authHeader.slice("Bearer ".length);
 	const payload = decodeMockJwt(token);
-	if (typeof payload.sub !== "string" || payload.sub.length === 0) {
+	if (typeof payload.sub !== "string" || !isUuid(payload.sub)) {
 		return null;
 	}
 	return {
 		id: payload.sub,
 		email: typeof payload.email === "string" ? payload.email : undefined,
 	};
+}
+
+function isUuid(value: string): boolean {
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+		value,
+	);
 }
 
 function decodeMockJwt(token: string): MockJwtPayload {
