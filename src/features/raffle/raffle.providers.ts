@@ -1,5 +1,5 @@
 import { createProvider } from "difunkt";
-import { DatabaseProvider } from "../../db/client";
+import { DatabaseProvider } from "../../db/db.provider";
 import { RaffleRepository } from "./raffle.repository";
 import { RaffleService } from "./raffle.service";
 
