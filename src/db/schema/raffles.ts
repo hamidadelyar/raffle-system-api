@@ -8,6 +8,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { prizes } from "./prizes";
+import { users } from "./users";
 
 export const raffleStatusEnum = pgEnum("raffle_status", [
 	"draft",
@@ -31,7 +32,7 @@ export const raffles = pgTable("raffles", {
 	ticketsSold: integer("tickets_sold").notNull().default(0),
 	drawDate: timestamp("draw_date", { withTimezone: true }).notNull(),
 	status: raffleStatusEnum("status").notNull().default("draft"),
-	winnerId: uuid("winner_id"), // TODO: reference users.id. Nullable becase may not have been drawn yet
+	winnerId: uuid("winner_id").references(() => users.id),
 	createdAt: timestamp("created_at", { withTimezone: true })
 		.notNull()
 		.defaultNow(),

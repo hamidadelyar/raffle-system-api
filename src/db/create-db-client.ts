@@ -2,9 +2,9 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema/index";
 
-export type Database = ReturnType<typeof createDatabase>;
+export type Database = ReturnType<typeof createDatabaseClient>;
 
-export function createDatabase(config: {
+export function createDatabaseClient(config: {
 	DATABASE_URL: string;
 	DATABASE_SSL_ENABLED: boolean;
 }) {

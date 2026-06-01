@@ -1,8 +1,8 @@
 import { createProvider } from "difunkt";
 import { ConfigProvider } from "../config/config.providers";
-import { createDatabase } from "./create-db";
+import { createDatabaseClient } from "./create-db-client";
 
 export const DatabaseProvider = createProvider(({ inject }) => {
 	const config = inject(ConfigProvider);
-	return createDatabase(config);
+	return createDatabaseClient(config);
 });

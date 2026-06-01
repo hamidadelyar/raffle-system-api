@@ -8,6 +8,13 @@
       "when": 1780176866518,
       "tag": "0000_deep_winter_soldier",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780320206980,
+      "tag": "0001_dapper_scarecrow",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import type { Database } from "../../db/create-db";
+import type { Database } from "../../db/create-db-client";
 import { prizes, raffles } from "../../db/schema";
 import type { IPrize } from "../../interfaces";
 import type { IRaffle } from "./raffle.types";
