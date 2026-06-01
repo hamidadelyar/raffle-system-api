@@ -1,26 +1,37 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { authPlugin } from "../../plugins/auth.plugin";
 import type { TicketService } from "./ticket.service";
 
 export function createTicketRoutes(ticketService: TicketService) {
-	return (
-		new Elysia()
-			.use(authPlugin)
-			// .post("/raffles/:raffleId/tickets", async ({ params }) => {
-			// 	const raffles = await ticketService.listRaffles(params.raffleId);
-			// 	return {
-			// 		data: raffles,
-			// 		success: true,
-			// 		error: null,
-			// 	};
-			// })
-			.get("/tickets", async ({ user }) => {
-				const tickets = await ticketService.listTickets({ userId: user!.id });
+	return new Elysia()
+		.use(authPlugin)
+		.post(
+			"/raffles/:raffleId/tickets",
+			async ({ params, set, user }) => {
+				const ticket = await ticketService.purchaseTicket({
+					raffleId: params.raffleId,
+					userId: user!.id,
+				});
+
+				set.status = 201;
 				return {
-					data: tickets,
+					data: ticket,
 					success: true,
 					error: null,
 				};
-			})
-	);
+			},
+			{
+				params: t.Object({
+					raffleId: t.String({ format: "uuid" }),
+				}),
+			},
+		)
+		.get("/tickets", async ({ user }) => {
+			const tickets = await ticketService.listTickets({ userId: user!.id });
+			return {
+				data: tickets,
+				success: true,
+				error: null,
+			};
+		});
 }
