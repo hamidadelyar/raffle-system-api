@@ -15,6 +15,13 @@
       "when": 1780320206980,
       "tag": "0001_dapper_scarecrow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780321248105,
+      "tag": "0002_damp_human_fly",
+      "breakpoints": true
     }
   ]
 }
