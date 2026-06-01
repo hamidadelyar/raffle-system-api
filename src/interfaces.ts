@@ -7,19 +7,10 @@
 // =============================================================================
 
 /** A prize awarded to the winner of a raffle */
-export interface IPrize {
-	id: string;
-	name: string;
-	description: string;
-	value: number;
-	imageUrl: string | null;
-}
-
-/** A user who can purchase raffle tickets */
-export interface IUser {
-	id: string;
-	email: string;
-	name: string;
-	balance: number;
-	createdAt: Date;
-}
+// export interface IPrize {
+// 	id: string;
+// 	name: string;
+// 	description: string;
+// 	value: number;
+// 	imageUrl: string | null;
+// }

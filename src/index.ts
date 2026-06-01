@@ -16,7 +16,14 @@ export async function createHttpApp() {
 	return new Elysia()
 		.use(openapi())
 		.use(errorHandlerPlugin)
-		.get("/health", () => ({ status: "ok" }))
+		.get("/health", () => ({ status: "ok" }), {
+			detail: {
+				tags: ["System"],
+				summary: "Check API health",
+				description:
+					"Returns a simple status response that can be used by uptime checks and load balancers.",
+			},
+		})
 		.use(createRaffleRoutes(raffleService))
 		.use(createTicketRoutes(ticketService));
 }

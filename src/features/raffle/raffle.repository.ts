@@ -1,8 +1,7 @@
 import { eq } from "drizzle-orm";
 import type { Database } from "../../db/create-db-client";
 import { prizes, raffles } from "../../db/schema";
-import type { IPrize } from "../../interfaces";
-import type { IRaffle } from "./raffle.types";
+import type { IPrize, IRaffle } from "./raffle.types";
 
 export class RaffleRepository {
 	constructor(private readonly db: Database) {}
@@ -44,7 +43,7 @@ function toPrizeDomain(row: PrizeRow): IPrize {
 		id: row.id,
 		name: row.name,
 		description: row.description,
-		value: Number(row.value),
+		value: row.value,
 		imageUrl: row.imageUrl,
 	};
 }
@@ -55,7 +54,7 @@ function toRaffleDomain(row: RaffleRow, prize: PrizeRow): IRaffle {
 		name: row.name,
 		description: row.description,
 		prize: toPrizeDomain(prize),
-		ticketPrice: Number(row.ticketPrice),
+		ticketPrice: row.ticketPrice,
 		maxTickets: row.maxTickets,
 		ticketsSold: row.ticketsSold,
 		drawDate: row.drawDate,
