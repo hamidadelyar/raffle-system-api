@@ -1,10 +1,11 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, lte, sql } from "drizzle-orm";
 import type { Database } from "../../db/create-db-client";
-import { prizes, raffles } from "../../db/schema";
+import { prizes, raffles, tickets } from "../../db/schema";
 import type { IPrize, IRaffle } from "./raffle.types";
 
 export class RaffleRepository {
 	constructor(private readonly db: Database) {}
+
 	async findAll(): Promise<IRaffle[]> {
 		const rows = await this.db
 			.select({
@@ -13,10 +14,11 @@ export class RaffleRepository {
 			})
 			.from(raffles)
 			.innerJoin(prizes, eq(raffles.prizeId, prizes.id));
+
 		return rows.map(({ raffle, prize }) => toRaffleDomain(raffle, prize));
 	}
 
-	async findById(id: string) {
+	async findById(id: string): Promise<IRaffle | null> {
 		const [row] = await this.db
 			.select({
 				raffle: raffles,
@@ -32,7 +34,71 @@ export class RaffleRepository {
 		}
 		return toRaffleDomain(row.raffle, row.prize);
 	}
+
+	async withLockedDueRaffles<T>(
+		handler: (tx: RaffleTransaction, dueRaffles: DueRaffle[]) => Promise<T>,
+	): Promise<T> {
+		return this.db.transaction(async (tx) => {
+			const dueRaffles = await this.findDueForDraw(tx);
+			return handler(tx, dueRaffles);
+		});
+	}
+
+	async findRandomWinner(
+		tx: RaffleTransaction,
+		raffleId: string,
+	): Promise<RaffleWinner | null> {
+		const [winner] = await tx
+			.select({ userId: tickets.userId })
+			.from(tickets)
+			.where(eq(tickets.raffleId, raffleId))
+			.orderBy(sql`random()`)
+			.limit(1);
+
+		return winner ?? null;
+	}
+
+	async markDrawn(
+		tx: RaffleTransaction,
+		raffleId: string,
+		winnerId: string,
+	): Promise<void> {
+		await tx
+			.update(raffles)
+			.set({
+				status: "drawn",
+				updatedAt: sql`now()`,
+				winnerId,
+			})
+			.where(
+				and(
+					eq(raffles.id, raffleId),
+					eq(raffles.status, "active"),
+					isNull(raffles.winnerId),
+				),
+			);
+	}
+
+	private async findDueForDraw(tx: RaffleTransaction): Promise<DueRaffle[]> {
+		return tx
+			.select({ id: raffles.id })
+			.from(raffles)
+			.where(
+				and(
+					eq(raffles.status, "active"),
+					isNull(raffles.winnerId),
+					lte(raffles.drawDate, sql`now()`),
+				),
+			)
+			.for("update", { skipLocked: true });
+	}
 }
+
+type RaffleTransaction = Parameters<Parameters<Database["transaction"]>[0]>[0];
+
+type DueRaffle = Pick<typeof raffles.$inferSelect, "id">;
+
+type RaffleWinner = Pick<typeof tickets.$inferSelect, "userId">;
 
 type RaffleRow = typeof raffles.$inferSelect;
 

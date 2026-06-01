@@ -1,7 +1,4 @@
-/** A ticket purchased by a user for a specific raffle */
-export interface ITicket {
-	id: string;
-	raffleId: string;
-	userId: string;
-	purchasedAt: Date;
-}
+import type { Static } from "@sinclair/typebox";
+import type { ticketSchema } from "./ticket.schemas";
+
+export type ITicket = Static<typeof ticketSchema>;
