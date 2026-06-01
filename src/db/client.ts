@@ -1,18 +1,24 @@
 import { createProvider } from "difunkt";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import { env } from "../config/env";
+import { ConfigProvider } from "../config/config.providers";
 import * as schema from "./schema/index";
 
-const pool = new Pool({
-	connectionString: env.DATABASE_URL,
-	ssl: env.DATABASE_SSL ? { rejectUnauthorized: false } : false,
+export type Database = ReturnType<typeof createDatabase>;
+
+export const DatabaseProvider = createProvider(({ inject }) => {
+	const config = inject(ConfigProvider);
+	return createDatabase(config);
 });
 
-export const db = drizzle(pool, { schema });
+function createDatabase(config: {
+	DATABASE_URL: string;
+	DATABASE_SSL_ENABLED: boolean;
+}) {
+	const pool = new Pool({
+		connectionString: config.DATABASE_URL,
+		ssl: config.DATABASE_SSL_ENABLED ? { rejectUnauthorized: false } : false,
+	});
 
-export type Database = typeof db;
-
-export const DatabaseProvider = createProvider(() => {
-	return db;
-});
+	return drizzle(pool, { schema });
+}
