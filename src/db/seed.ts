@@ -3,6 +3,11 @@ import { createDatabaseClient } from "./create-db-client";
 import { prizes, raffles, tickets, users } from "./schema";
 
 const db = createDatabaseClient(env);
+const now = new Date();
+
+function minutesFromNow(minutes: number) {
+	return new Date(now.getTime() + minutes * 60 * 1000);
+}
 
 const seedUsers = [
 	{
@@ -34,6 +39,13 @@ const seedPrizes = [
 		value: "399.00",
 		imageUrl: null,
 	},
+	{
+		id: "ae12b05a-8d06-4d2f-9af2-4c20eaa45691",
+		name: "Nintendo Switch 2",
+		description: "Nintendo Switch 2 console",
+		value: "399.99",
+		imageUrl: null,
+	},
 ];
 
 const seedRaffles = [
@@ -58,6 +70,39 @@ const seedRaffles = [
 		drawDate: new Date("2026-06-15T19:00:00.000Z"),
 		status: "drawn" as const,
 		winnerId: seedUsers[1].id,
+	},
+	{
+		id: "20ef436f-407c-4fbb-bf6d-bbb646cb6c90",
+		name: "One Minute Draw Raffle",
+		description: "Draws one minute after seeding",
+		prizeId: seedPrizes[2].id,
+		ticketPrice: "2.00",
+		maxTickets: 100,
+		drawDate: minutesFromNow(1),
+		status: "active" as const,
+		winnerId: null,
+	},
+	{
+		id: "d34ac858-b861-49c1-9670-9fa2b9acc201",
+		name: "Two Minute Draw Raffle",
+		description: "Draws two minutes after seeding",
+		prizeId: seedPrizes[0].id,
+		ticketPrice: "2.00",
+		maxTickets: 100,
+		drawDate: minutesFromNow(2),
+		status: "active" as const,
+		winnerId: null,
+	},
+	{
+		id: "854c8d65-3fcb-4b6e-88e5-d75f63067b16",
+		name: "Three Minute Draw Raffle",
+		description: "Draws three minutes after seeding",
+		prizeId: seedPrizes[1].id,
+		ticketPrice: "2.00",
+		maxTickets: 100,
+		drawDate: minutesFromNow(3),
+		status: "active" as const,
+		winnerId: null,
 	},
 ];
 
@@ -91,6 +136,24 @@ const seedTickets = [
 		raffleId: seedRaffles[1].id,
 		userId: seedUsers[1].id,
 		purchasedAt: new Date("2026-06-01T11:05:00.000Z"),
+	},
+	{
+		id: "8d3c17ef-2970-42f5-91ab-4c79d7653435",
+		raffleId: seedRaffles[2].id,
+		userId: seedUsers[0].id,
+		purchasedAt: now,
+	},
+	{
+		id: "c8d4888d-b830-4b65-bf16-11a9b236963a",
+		raffleId: seedRaffles[3].id,
+		userId: seedUsers[1].id,
+		purchasedAt: now,
+	},
+	{
+		id: "c63858a6-8b8d-4b72-9692-4ac9be7691cc",
+		raffleId: seedRaffles[4].id,
+		userId: seedUsers[0].id,
+		purchasedAt: now,
 	},
 ];
 

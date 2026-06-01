@@ -8,10 +8,12 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
+		"raffles:draw": "bun src/jobs/draw-raffles.ts",
 		"db:seed": "bun src/db/seed.ts",
 		"db:studio": "drizzle-kit studio"
 	},
 	"dependencies": {
+		"@elysia/cron": "^1.4.2",
 		"@elysia/openapi": "^1.4.15",
 		"difunkt": "^0.3.1",
 		"dotenv": "^17.4.2",

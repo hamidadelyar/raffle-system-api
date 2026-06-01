@@ -1,3 +1,4 @@
+import { cron, Patterns } from "@elysia/cron";
 import { openapi } from "@elysia/openapi";
 import { createApplication } from "difunkt";
 import { Elysia } from "elysia";
@@ -13,19 +14,37 @@ export async function createHttpApp() {
 	const raffleService = resolve(RaffleServiceProvider);
 	const ticketService = resolve(TicketServiceProvider);
 
-	return new Elysia()
-		.use(openapi())
-		.use(errorHandlerPlugin)
-		.get("/health", () => ({ status: "ok" }), {
-			detail: {
-				tags: ["System"],
-				summary: "Check API health",
-				description:
-					"Returns a simple status response that can be used by uptime checks and load balancers.",
-			},
-		})
-		.use(createRaffleRoutes(raffleService))
-		.use(createTicketRoutes(ticketService));
+	return (
+		new Elysia()
+			.use(openapi())
+			.use(errorHandlerPlugin)
+			// for simplicity - would not do this for prod
+			// if this app were deployed with multiple running server instances, each instance would run the cron job
+			.use(
+				cron({
+					name: "drawRaffles",
+					pattern: Patterns.everyMinute(),
+					async run() {
+						try {
+							const drawnRaffles = await raffleService.drawDueRaffles();
+							console.log(`Drawn ${drawnRaffles.length} raffle(s)`);
+						} catch (error) {
+							console.error("Failed to draw raffles", error);
+						}
+					},
+				}),
+			)
+			.get("/health", () => ({ status: "ok" }), {
+				detail: {
+					tags: ["System"],
+					summary: "Check API health",
+					description:
+						"Returns a simple status response that can be used by uptime checks and load balancers.",
+				},
+			})
+			.use(createRaffleRoutes(raffleService))
+			.use(createTicketRoutes(ticketService))
+	);
 }
 
 const app = await createHttpApp();
