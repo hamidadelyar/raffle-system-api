@@ -9,6 +9,8 @@ export function createRaffleRoutes(raffleService: RaffleService) {
 			const raffles = await raffleService.listRaffles();
 			return {
 				data: raffles,
+				success: true,
+				error: null,
 			};
 		})
 		.get(
@@ -20,6 +22,8 @@ export function createRaffleRoutes(raffleService: RaffleService) {
 				}
 				return {
 					data: raffle,
+					success: true,
+					error: null,
 				};
 			},
 			{
