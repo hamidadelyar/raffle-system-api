@@ -23,10 +23,26 @@ describe("auth.plugin.ts", () => {
 		expect(response.status).toBe(401);
 	});
 
+	test("returns 401 when sub is not a uuid", async () => {
+		const app = createTestApp();
+		const token = createMockJwt({
+			sub: "abc",
+			email: "test@example.com",
+		});
+		const response = await app.handle(
+			new Request("http://localhost/protected", {
+				headers: {
+					authorization: `Bearer ${token}`,
+				},
+			}),
+		);
+		expect(response.status).toBe(401);
+	});
+
 	test("allows request when token has a valid sub", async () => {
 		const app = createTestApp();
 		const token = createMockJwt({
-			sub: "user_123",
+			sub: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
 			email: "test@example.com",
 		});
 		const response = await app.handle(
@@ -40,7 +56,7 @@ describe("auth.plugin.ts", () => {
 		expect(response.status).toBe(200);
 		expect(body).toEqual({
 			data: {
-				id: "user_123",
+				id: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
 				email: "test@example.com",
 			},
 		});

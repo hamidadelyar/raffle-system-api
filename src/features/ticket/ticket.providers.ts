@@ -1,5 +1,6 @@
 import { createProvider } from "difunkt";
 import { DatabaseProvider } from "../../db/db.provider";
+import { UserRepositoryProvider } from "../user/user.providers";
 import { TicketRepository } from "./ticket.repository";
 import { TicketService } from "./ticket.service";
 
@@ -10,5 +11,6 @@ export const TicketRepositoryProvider = createProvider(({ inject }) => {
 
 export const TicketServiceProvider = createProvider(({ inject }) => {
 	const ticketRepository = inject(TicketRepositoryProvider);
-	return new TicketService(ticketRepository);
+	const userRepository = inject(UserRepositoryProvider);
+	return new TicketService(ticketRepository, userRepository);
 });
