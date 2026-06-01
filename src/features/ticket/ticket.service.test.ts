@@ -33,17 +33,17 @@ describe("TicketService", () => {
 			},
 			findAll: async () => [],
 			findRaffleForPurchase: async () => ({
-					id: ticket.raffleId,
-					maxTickets: 500,
-					status: "active" as const,
-					ticketPrice: "5.00",
-					ticketsSold: 0,
+				id: ticket.raffleId,
+				maxTickets: 500,
+				status: "active" as const,
+				ticketPrice: "5.00",
+				ticketsSold: 0,
 			}),
 		};
 		const userRepository = {
-			findUserForPurchase: async () => ({
-					balance: "100.00",
-					id: ticket.userId,
+			findUser: async () => ({
+				balance: "100.00",
+				id: ticket.userId,
 			}),
 		};
 
@@ -83,17 +83,17 @@ describe("TicketService", () => {
 			},
 			findAll: async () => [],
 			findRaffleForPurchase: async () => ({
-					id: "78bfd313-c266-4a1f-8b58-aa8f62ad31b5",
-					maxTickets: 500,
-					status: "draft" as const,
-					ticketPrice: "5.00",
-					ticketsSold: 0,
+				id: "78bfd313-c266-4a1f-8b58-aa8f62ad31b5",
+				maxTickets: 500,
+				status: "draft" as const,
+				ticketPrice: "5.00",
+				ticketsSold: 0,
 			}),
 		};
 		const userRepository = {
-			findUserForPurchase: async () => ({
-					balance: "100.00",
-					id: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
+			findUser: async () => ({
+				balance: "100.00",
+				id: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
 			}),
 		};
 		const resolve = await createApplication(TicketModule, {
@@ -125,17 +125,17 @@ describe("TicketService", () => {
 			},
 			findAll: async () => [],
 			findRaffleForPurchase: async () => ({
-					id: "78bfd313-c266-4a1f-8b58-aa8f62ad31b5",
-					maxTickets: 500,
-					status: "active" as const,
-					ticketPrice: "5.00",
-					ticketsSold: 500,
+				id: "78bfd313-c266-4a1f-8b58-aa8f62ad31b5",
+				maxTickets: 500,
+				status: "active" as const,
+				ticketPrice: "5.00",
+				ticketsSold: 500,
 			}),
 		};
 		const userRepository = {
-			findUserForPurchase: async () => ({
-					balance: "100.00",
-					id: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
+			findUser: async () => ({
+				balance: "100.00",
+				id: "0d80ce5c-dbd9-46bb-bf3b-cc74a19c38ab",
 			}),
 		};
 		const resolve = await createApplication(TicketModule, {
