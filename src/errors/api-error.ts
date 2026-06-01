@@ -7,6 +7,8 @@ type Code =
 	| "VALIDATION_ERROR";
 
 export class ApiError extends Error {
+	public readonly status: number;
+
 	constructor(
 		public readonly statusCode: number,
 		public readonly code: Code,
@@ -15,6 +17,7 @@ export class ApiError extends Error {
 	) {
 		super(message);
 		Object.setPrototypeOf(this, ApiError.prototype);
+		this.status = statusCode;
 	}
 
 	static badRequest(

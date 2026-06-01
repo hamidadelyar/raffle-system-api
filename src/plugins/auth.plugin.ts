@@ -17,7 +17,9 @@ export const authPlugin = new Elysia({ name: "auth" })
 		return { user };
 	})
 	.onBeforeHandle({ as: "scoped" }, ({ user }) => {
+		console.log({ user });
 		if (!user) {
+			console.log("throw error");
 			throw new ApiError(401, "UNAUTHORIZED", "Authentication required");
 		}
 	});
