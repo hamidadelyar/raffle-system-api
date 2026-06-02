@@ -28,7 +28,7 @@ export async function createHttpApp() {
 			.use(
 				cron({
 					name: "drawRaffles",
-					pattern: Patterns.everyMinute(),
+					pattern: Patterns.everyMinutes(5),
 					async run() {
 						try {
 							const drawnRaffles = await raffleService.drawDueRaffles();

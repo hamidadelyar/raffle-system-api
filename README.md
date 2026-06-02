@@ -123,7 +123,7 @@ Authenticated endpoints:
 
 ## Raffle Drawing
 
-Due raffles are drawn automatically once per minute while the API is running. A raffle is eligible when:
+Due raffles are drawn automatically once every 5 minutes while the API is running. A raffle is eligible when:
 
 - `status` is `active`
 - `winner_id` is `null`
