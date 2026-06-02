@@ -45,7 +45,7 @@ export function createTicketRoutes(ticketService: TicketService) {
 			},
 		)
 		.get(
-			"/tickets",
+			"/me/tickets",
 			async ({ user }) => {
 				const tickets = await ticketService.listTickets({
 					userId: user.id,

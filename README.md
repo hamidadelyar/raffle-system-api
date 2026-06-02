@@ -118,8 +118,8 @@ Authenticated endpoints:
 
 - `GET /raffles` - list raffles with prize details
 - `GET /raffles/:id` - get a raffle by ID
-- `POST /raffles/:raffleId/tickets` - purchase a ticket for the authenticated user
-- `GET /tickets` - list tickets purchased by the authenticated user
+- `POST /raffles/:raffleId/tickets` - purchase one or more tickets for the authenticated user
+- `GET /me/tickets` - list tickets purchased by the authenticated user
 
 ## Raffle Drawing
 
