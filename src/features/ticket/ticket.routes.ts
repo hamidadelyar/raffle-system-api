@@ -15,7 +15,7 @@ export function createTicketRoutes(ticketService: TicketService) {
 			async ({ params, set, user }) => {
 				const ticket = await ticketService.purchaseTicket({
 					raffleId: params.raffleId,
-					userId: user!.id,
+					userId: user.id,
 				});
 
 				set.status = 201;
@@ -44,7 +44,7 @@ export function createTicketRoutes(ticketService: TicketService) {
 		.get(
 			"/tickets",
 			async ({ user }) => {
-				const tickets = await ticketService.listTickets({ userId: user!.id });
+				const tickets = await ticketService.listTickets({ userId: user.id });
 				return {
 					data: tickets,
 					success: true,

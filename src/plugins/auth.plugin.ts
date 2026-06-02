@@ -11,16 +11,18 @@ type MockJwtPayload = {
 	email?: unknown;
 };
 
-export const authPlugin = new Elysia({ name: "auth" })
-	.derive({ as: "scoped" }, ({ headers }) => {
+export const authPlugin = new Elysia({ name: "auth" }).derive(
+	{ as: "scoped" },
+	({ headers }) => {
 		const user = getUserFromAuthorizationHeader(headers.authorization);
-		return { user };
-	})
-	.onBeforeHandle({ as: "scoped" }, ({ user }) => {
+
 		if (!user) {
 			throw new ApiError(401, "UNAUTHORIZED", "Authentication required");
 		}
-	});
+
+		return { user };
+	},
+);
 
 function getUserFromAuthorizationHeader(
 	authHeader: string | undefined,
