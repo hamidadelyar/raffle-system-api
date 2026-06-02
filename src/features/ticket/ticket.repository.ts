@@ -34,26 +34,28 @@ export class TicketRepository {
 	}
 
 	async createPurchase({
+		quantity,
 		raffleId,
 		ticketPrice,
 		userId,
 	}: {
+		quantity: number;
 		raffleId: string;
 		ticketPrice: string;
 		userId: string;
-	}): Promise<ITicket> {
+	}): Promise<ITicket[]> {
 		return this.db.transaction(async (tx) => {
 			const [updatedRaffle] = await tx
 				.update(raffles)
 				.set({
-					ticketsSold: sql`${raffles.ticketsSold} + 1`,
+					ticketsSold: sql`${raffles.ticketsSold} + ${quantity}`,
 					updatedAt: sql`now()`,
 				})
 				.where(
 					and(
 						eq(raffles.id, raffleId),
 						eq(raffles.status, "active"),
-						sql`${raffles.ticketsSold} < ${raffles.maxTickets}`,
+						sql`${raffles.ticketsSold} + ${quantity} <= ${raffles.maxTickets}`,
 					),
 				)
 				.returning({ id: raffles.id });
@@ -65,11 +67,14 @@ export class TicketRepository {
 			const [updatedUser] = await tx
 				.update(users)
 				.set({
-					balance: sql`${users.balance} - ${ticketPrice}`,
+					balance: sql`${users.balance} - (${ticketPrice}::numeric * ${quantity})`,
 					updatedAt: sql`now()`,
 				})
 				.where(
-					and(eq(users.id, userId), sql`${users.balance} >= ${ticketPrice}`),
+					and(
+						eq(users.id, userId),
+						sql`${users.balance} >= (${ticketPrice}::numeric * ${quantity})`,
+					),
 				)
 				.returning({ id: users.id });
 
@@ -77,12 +82,17 @@ export class TicketRepository {
 				throw ApiError.conflict("Insufficient balance");
 			}
 
-			const [ticket] = await tx
+			const purchasedTickets = await tx
 				.insert(tickets)
-				.values({ raffleId, userId })
+				.values(
+					Array.from({ length: quantity }, () => ({
+						raffleId,
+						userId,
+					})),
+				)
 				.returning();
 
-			return toTicketDomain(ticket);
+			return purchasedTickets.map(toTicketDomain);
 		});
 	}
 }

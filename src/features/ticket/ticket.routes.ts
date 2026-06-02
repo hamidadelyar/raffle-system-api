@@ -3,7 +3,8 @@ import { authPlugin } from "../../plugins/auth.plugin";
 import { errorResponseSchema } from "../../response.schemas";
 import {
 	ticketListResponseSchema,
-	ticketResponseSchema,
+	ticketPurchaseBodySchema,
+	ticketPurchaseResponseSchema,
 } from "./ticket.schemas";
 import type { TicketService } from "./ticket.service";
 
@@ -12,15 +13,16 @@ export function createTicketRoutes(ticketService: TicketService) {
 		.use(authPlugin)
 		.post(
 			"/raffles/:raffleId/tickets",
-			async ({ params, set, user }) => {
-				const ticket = await ticketService.purchaseTicket({
+			async ({ body, params, set, user }) => {
+				const tickets = await ticketService.purchaseTickets({
+					quantity: body.quantity,
 					raffleId: params.raffleId,
 					userId: user.id,
 				});
 
 				set.status = 201;
 				return {
-					data: ticket,
+					data: tickets,
 					success: true,
 					error: null,
 				};
@@ -28,15 +30,16 @@ export function createTicketRoutes(ticketService: TicketService) {
 			{
 				detail: {
 					tags: ["Tickets"],
-					summary: "Purchase raffle ticket",
+					summary: "Purchase raffle tickets",
 					description:
-						"Purchases one ticket for the authenticated user in the selected raffle. The raffle must be active, have remaining tickets, and the user must have enough balance.",
+						"Purchases one or more tickets for the authenticated user in the selected raffle. The raffle must be active, have enough remaining tickets, and the user must have enough balance.",
 				},
+				body: ticketPurchaseBodySchema,
 				params: t.Object({
 					raffleId: t.String({ format: "uuid" }),
 				}),
 				response: {
-					201: ticketResponseSchema,
+					201: ticketPurchaseResponseSchema,
 					error: errorResponseSchema,
 				},
 			},

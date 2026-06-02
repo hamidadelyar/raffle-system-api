@@ -86,19 +86,19 @@ function createMockTicketRepository({
 	createPurchaseCalls = [],
 	findAllCalls = [],
 	raffle = createPurchaseRaffle(),
-	ticket = createTicket(),
+	purchasedTickets = [createTicket()],
 	tickets = [],
 }: {
 	createPurchaseCalls?: CreatePurchaseInput[];
 	findAllCalls?: FindAllInput[];
 	raffle?: TicketPurchaseRaffle | null;
-	ticket?: ITicket;
+	purchasedTickets?: ITicket[];
 	tickets?: ITicket[];
 } = {}): MockTicketRepository {
 	return {
 		createPurchase: async (input) => {
 			createPurchaseCalls.push(input);
-			return ticket;
+			return purchasedTickets;
 		},
 		findAll: async (input) => {
 			findAllCalls.push(input);
@@ -117,12 +117,15 @@ function createMockUserRepository(
 }
 
 describe("TicketService", () => {
-	test("purchases a ticket using a mocked repository provider", async () => {
-		const ticket = createTicket();
+	test("purchases multiple tickets using a mocked repository provider", async () => {
+		const purchasedTickets = [
+			createTicket({ id: "777ae074-bd94-4fd1-a1a0-7be919971e13" }),
+			createTicket({ id: "777ae074-bd94-4fd1-a1a0-7be919971e14" }),
+		];
 		const createPurchaseCalls: CreatePurchaseInput[] = [];
 		const ticketRepository = createMockTicketRepository({
 			createPurchaseCalls,
-			ticket,
+			purchasedTickets,
 		});
 		const userRepository = createMockUserRepository();
 		const ticketService = await createTicketService({
@@ -130,11 +133,16 @@ describe("TicketService", () => {
 			userRepository,
 		});
 
-		const result = await ticketService.purchaseTicket({ raffleId, userId });
+		const result = await ticketService.purchaseTickets({
+			quantity: 2,
+			raffleId,
+			userId,
+		});
 
-		expect(result).toEqual(ticket);
+		expect(result).toEqual(purchasedTickets);
 		expect(createPurchaseCalls).toEqual([
 			{
+				quantity: 2,
 				raffleId,
 				ticketPrice: "5.00",
 				userId,
@@ -169,8 +177,13 @@ describe("TicketService", () => {
 			expectedError: "Raffle has no tickets available",
 		},
 		{
+			name: "requested quantity exceeds remaining tickets",
+			raffle: createPurchaseRaffle({ maxTickets: 500, ticketsSold: 499 }),
+			expectedError: "Raffle has no tickets available",
+		},
+		{
 			name: "user has insufficient balance",
-			user: createPurchaseUser({ balance: "4.99" }),
+			user: createPurchaseUser({ balance: "9.99" }),
 			expectedError: "Insufficient balance",
 		},
 	];
@@ -189,7 +202,7 @@ describe("TicketService", () => {
 			});
 
 			await expect(
-				ticketService.purchaseTicket({ raffleId, userId }),
+				ticketService.purchaseTickets({ quantity: 2, raffleId, userId }),
 			).rejects.toThrow(expectedError);
 			expect(createPurchaseCalls).toEqual([]);
 		});

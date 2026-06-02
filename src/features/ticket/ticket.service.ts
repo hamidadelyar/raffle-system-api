@@ -23,14 +23,16 @@ export class TicketService {
 		return tickets;
 	}
 
-	async purchaseTicket({
+	async purchaseTickets({
+		quantity,
 		raffleId,
 		userId,
 	}: {
+		quantity: number;
 		raffleId: string;
 		userId: string;
-	}): Promise<ITicket> {
-		log.info({ raffleId, userId }, "Purchasing ticket");
+	}): Promise<ITicket[]> {
+		log.info({ quantity, raffleId, userId }, "Purchasing tickets");
 
 		const raffle = await this.ticketRepository.findRaffleForPurchase(raffleId);
 
@@ -46,23 +48,25 @@ export class TicketService {
 			throw ApiError.notFound("User not found");
 		}
 
-		validateTicketPurchase(raffle, user);
+		validateTicketPurchase(raffle, user, quantity);
 
-		const ticket = await this.ticketRepository.createPurchase({
+		const tickets = await this.ticketRepository.createPurchase({
+			quantity,
 			raffleId,
 			ticketPrice: raffle.ticketPrice,
 			userId,
 		});
 
-		log.info({ raffleId, ticketId: ticket.id, userId }, "Purchased ticket");
+		log.info({ count: tickets.length, raffleId, userId }, "Purchased tickets");
 
-		return ticket;
+		return tickets;
 	}
 }
 
 function validateTicketPurchase(
 	raffle: TicketPurchaseRaffle,
 	user: PurchaseUser,
+	quantity: number,
 ) {
 	if (raffle.status !== "active") {
 		log.warn(
@@ -72,10 +76,11 @@ function validateTicketPurchase(
 		throw ApiError.conflict("Raffle is not active");
 	}
 
-	if (raffle.ticketsSold >= raffle.maxTickets) {
+	if (raffle.ticketsSold + quantity > raffle.maxTickets) {
 		log.warn(
 			{
 				maxTickets: raffle.maxTickets,
+				quantity,
 				raffleId: raffle.id,
 				ticketsSold: raffle.ticketsSold,
 				userId: user.id,
@@ -85,10 +90,11 @@ function validateTicketPurchase(
 		throw ApiError.conflict("Raffle has no tickets available");
 	}
 
-	if (Number(user.balance) < Number(raffle.ticketPrice)) {
+	if (Number(user.balance) < Number(raffle.ticketPrice) * quantity) {
 		log.warn(
 			{
 				balance: user.balance,
+				quantity,
 				raffleId: raffle.id,
 				ticketPrice: raffle.ticketPrice,
 				userId: user.id,

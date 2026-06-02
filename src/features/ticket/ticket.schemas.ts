@@ -10,6 +10,15 @@ export const ticketResponseSchema = t.Object({
 	...successResponseFields,
 });
 
+export const ticketPurchaseBodySchema = t.Object({
+	quantity: t.Integer({ minimum: 1 }),
+});
+
+export const ticketPurchaseResponseSchema = t.Object({
+	data: t.Array(ticketSchema),
+	...successResponseFields,
+});
+
 export const ticketListResponseSchema = t.Object({
 	data: t.Array(ticketSchema),
 	...successResponseFields,
