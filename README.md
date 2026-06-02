@@ -101,8 +101,20 @@ Example token payload:
 
 Bearer auth to use
 
-```
+```text
 mock.[base64encodedjson].signature
+```
+
+johnsmith@gmail.com
+
+```text
+mock.ewogICJzdWIiOiAiNTVkMjA3MzctYTYxOC00YjU2LTlhMTAtNjBmMmJiODU3Y2I1IiwKICAiZW1haWwiOiAiam9obnNtaXRoQGdtYWlsLmNvbSIKfQ==.signature 
+```
+
+hamidadelyar@gmail.com
+
+```text
+mock.ewogICJzdWIiOiAiMGQ4MGNlNWMtZGJkOS00NmJiLWJmM2ItY2M3NGExOWMzOGFiIiwKICAiZW1haWwiOiAiaGFtaWRhZGVseWFyQGdtYWlsLmNvbSIKfQ==.signature
 ```
 
 Example request:
