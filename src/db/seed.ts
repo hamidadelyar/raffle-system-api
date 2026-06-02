@@ -1,7 +1,9 @@
 import { env } from "../config/env";
+import { createLogger } from "../plugins/logger.plugin";
 import { createDatabaseClient } from "./create-db-client";
 import { prizes, raffles, tickets, users } from "./schema";
 
+const log = createLogger("Seed");
 const db = createDatabaseClient(env);
 const now = new Date();
 
@@ -229,4 +231,4 @@ for (const ticket of seedTickets) {
 		});
 }
 
-console.log("Database seeded");
+log.info("Database seeded");

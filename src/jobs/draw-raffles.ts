@@ -1,6 +1,9 @@
 import { createApplication } from "difunkt";
 import { AppModule } from "../app.module";
 import { RaffleServiceProvider } from "../features/raffle/raffle.providers";
+import { createLogger } from "../plugins/logger.plugin";
+
+const log = createLogger("DrawRafflesJob");
 
 const resolve = await createApplication(AppModule);
 const raffleService = resolve(RaffleServiceProvider);
@@ -8,9 +11,9 @@ const raffleService = resolve(RaffleServiceProvider);
 try {
 	const drawnRaffles = await raffleService.drawDueRaffles();
 
-	console.log(`Drawn ${drawnRaffles.length} raffle(s)`);
+	log.info({ count: drawnRaffles.length }, "Drawn raffles");
 	process.exit(0);
 } catch (error) {
-	console.error("Failed to draw raffles", error);
+	log.error({ error }, "Failed to draw raffles");
 	process.exit(1);
 }

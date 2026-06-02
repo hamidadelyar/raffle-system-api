@@ -1,4 +1,3 @@
-import { DrizzleQueryError } from "drizzle-orm";
 import { Elysia, type ErrorHandler, InvertedStatusMap } from "elysia";
 import { ApiError } from "../errors/api-error";
 
@@ -17,18 +16,6 @@ const createErrorResponse = (message: string): ErrorResponse => ({
 const getSafeErrorMessage = (status: number): string =>
 	(InvertedStatusMap as Record<number, string>)[status] ??
 	"An unexpected error occurred";
-
-const getLogMessage = (error: unknown): string => {
-	if (error instanceof DrizzleQueryError) {
-		return `Failed query: ${error.query}`;
-	}
-
-	if (error instanceof Error) {
-		return error.message;
-	}
-
-	return String(error);
-};
 
 const getStatusFromError = (error: unknown, code?: string | number): number => {
 	if (error instanceof ApiError) {
@@ -66,12 +53,7 @@ const getMessageFromError = (error: unknown, status: number): string => {
 	return getSafeErrorMessage(status);
 };
 
-export const safeErrorHandler: ErrorHandler = ({
-	code,
-	error,
-	set,
-	request,
-}) => {
+export const safeErrorHandler: ErrorHandler = ({ code, error, set }) => {
 	/**
 	 * Let Elysia handle its own built-in errors.
 	 * This keeps validation and 404 responses consistent with the framework.
@@ -83,20 +65,6 @@ export const safeErrorHandler: ErrorHandler = ({
 	const status = getStatusFromError(error, code);
 
 	set.status = status;
-
-	if (status >= 500) {
-		const route = `${request.method} ${new URL(request.url).pathname}`;
-
-		console.error(`[${status}] ${route} — ${getLogMessage(error)}`);
-
-		if (
-			error instanceof Error &&
-			!(error instanceof DrizzleQueryError) &&
-			error.stack
-		) {
-			console.error(error.stack);
-		}
-	}
 
 	return createErrorResponse(getMessageFromError(error, status));
 };

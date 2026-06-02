@@ -157,6 +157,8 @@ bun run raffles:draw
 
 - The API returns a consistent `{ data, success, error }` response shape. This makes client handling predictable, though it adds a small amount of response wrapping for simple endpoints.
 
+- `@bogeychan/elysia-logger` is used for logging with `pino` under the hood. The current logger is intentionally simple for the technical test. It is missing correlation ids, redactions rules amongst other features.
+
 ## Database Commands
 
 ```bash

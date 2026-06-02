@@ -8,6 +8,10 @@ import { createRaffleRoutes } from "./features/raffle/raffle.routes";
 import { TicketServiceProvider } from "./features/ticket/ticket.providers";
 import { createTicketRoutes } from "./features/ticket/ticket.routes";
 import { errorHandlerPlugin } from "./plugins/error-handler.plugin";
+import { createLogger, logger } from "./plugins/logger.plugin";
+
+const appLog = createLogger("App");
+const cronLog = createLogger("DrawRafflesCron");
 
 export async function createHttpApp() {
 	const resolve = await createApplication(AppModule);
@@ -17,6 +21,7 @@ export async function createHttpApp() {
 	return (
 		new Elysia()
 			.use(openapi())
+			.use(logger.into({ customProps: () => ({ service: "Http" }) }))
 			.use(errorHandlerPlugin)
 			// for simplicity - would not do this for prod
 			// if this app were deployed with multiple running server instances, each instance would run the cron job
@@ -27,9 +32,9 @@ export async function createHttpApp() {
 					async run() {
 						try {
 							const drawnRaffles = await raffleService.drawDueRaffles();
-							console.log(`Drawn ${drawnRaffles.length} raffle(s)`);
+							cronLog.info({ count: drawnRaffles.length }, "Drawn raffles");
 						} catch (error) {
-							console.error("Failed to draw raffles", error);
+							cronLog.error({ error }, "Failed to draw raffles");
 						}
 					},
 				}),
@@ -50,6 +55,4 @@ export async function createHttpApp() {
 const app = await createHttpApp();
 app.listen(process.env.PORT ?? 3000);
 
-console.log(
-	`🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
-);
+appLog.info("Elysia is running");
