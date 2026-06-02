@@ -149,9 +149,11 @@ bun run raffles:draw
 
 - Due raffles are selected with `FOR UPDATE SKIP LOCKED`. This lets draw workers avoid blocking each other, but the current in-process cron still keeps the operational model intentionally simple.
 
-- Overdue raffles with no sold tickets are marked `cancelled`. This keeps the raffle lifecycle moving forward and avoids repeatedly processing raffles that cannot produce a winner.
+- Overdue raffles with no sold tickets are marked `cancelled`.
 
 - Drizzle migrations are committed and used as the source of truth for database changes.
+
+- API schemas are derived from the Drizzle schema using `drizzle-typebox` where practical. This reduces duplication between database models and route validation/response schemas, though endpoint-specific schemas may still be needed when the API shape differs from the table shape.
 
 - The API returns a consistent `{ data, success, error }` response shape. This makes client handling predictable, though it adds a small amount of response wrapping for simple endpoints.
 
