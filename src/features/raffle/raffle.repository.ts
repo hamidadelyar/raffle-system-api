@@ -6,14 +6,15 @@ import type { IPrize, IRaffle } from "./raffle.types";
 export class RaffleRepository {
 	constructor(private readonly db: Database) {}
 
-	async findAll(): Promise<IRaffle[]> {
+	async findAllActive(): Promise<IRaffle[]> {
 		const rows = await this.db
 			.select({
 				raffle: raffles,
 				prize: prizes,
 			})
 			.from(raffles)
-			.innerJoin(prizes, eq(raffles.prizeId, prizes.id));
+			.innerJoin(prizes, eq(raffles.prizeId, prizes.id))
+			.where(eq(raffles.status, "active"));
 
 		return rows.map(({ raffle, prize }) => toRaffleDomain(raffle, prize));
 	}

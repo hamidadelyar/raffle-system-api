@@ -9,7 +9,7 @@ export class RaffleService {
 
 	async listRaffles(): Promise<IRaffle[]> {
 		log.debug("Listing raffles");
-		const raffles = await this.raffleRepository.findAll();
+		const raffles = await this.raffleRepository.findAllActive();
 		log.info({ count: raffles.length }, "Listed raffles");
 
 		return raffles;
