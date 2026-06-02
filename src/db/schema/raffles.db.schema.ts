@@ -9,8 +9,8 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { prizes } from "./prizes.schema";
-import { users } from "./users.schema";
+import { prizes } from "./prizes.db.schema";
+import { users } from "./users.db.schema";
 
 export const raffleStatusEnum = pgEnum("raffle_status", [
 	"draft",
