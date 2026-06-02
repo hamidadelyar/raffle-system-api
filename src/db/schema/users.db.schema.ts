@@ -1,12 +1,6 @@
 import { sql } from "drizzle-orm";
-import {
-	check,
-	numeric,
-	pgTable,
-	text,
-	timestamp,
-	uuid,
-} from "drizzle-orm/pg-core";
+import { check, numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { timestampColumns } from "./columns";
 
 export const users = pgTable(
 	"users",
@@ -20,12 +14,7 @@ export const users = pgTable(
 		})
 			.notNull()
 			.default("0"),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
-		updatedAt: timestamp("updated_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		...timestampColumns,
 	},
 	(table) => [check("users_balance_non_negative", sql`${table.balance} >= 0`)],
 );

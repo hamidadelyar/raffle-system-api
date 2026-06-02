@@ -9,6 +9,7 @@ import {
 	timestamp,
 	uuid,
 } from "drizzle-orm/pg-core";
+import { timestampColumns } from "./columns";
 import { prizes } from "./prizes.db.schema";
 import { users } from "./users.db.schema";
 
@@ -37,12 +38,7 @@ export const raffles = pgTable(
 		drawDate: timestamp("draw_date", { withTimezone: true }).notNull(),
 		status: raffleStatusEnum("status").notNull().default("draft"),
 		winnerId: uuid("winner_id").references(() => users.id),
-		createdAt: timestamp("created_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
-		updatedAt: timestamp("updated_at", { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		...timestampColumns,
 	},
 	(table) => [
 		check("raffles_ticket_price_positive", sql`${table.ticketPrice} > 0`),
