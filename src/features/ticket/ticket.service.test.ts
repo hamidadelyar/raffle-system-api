@@ -72,7 +72,9 @@ function createPurchaseRaffle(
 	};
 }
 
-function createPurchaseUser(overrides: Partial<PurchaseUser> = {}): PurchaseUser {
+function createPurchaseUser(
+	overrides: Partial<PurchaseUser> = {},
+): PurchaseUser {
 	return {
 		balance: "100.00",
 		id: userId,

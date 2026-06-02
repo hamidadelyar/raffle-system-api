@@ -24,5 +24,5 @@ CREATEDB raffolux
 2. Run migrations
 
 ```zsh
-bun run db:migrations
+bun run db:migrate
 ```
