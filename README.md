@@ -7,7 +7,7 @@ A Bun/Elysia API for listing raffles, purchasing tickets, and drawing raffle win
 - Bun
 - Elysia
 - PostgreSQL
-- Drizzle ORM / Drizzle Kit
+- Drizzle ORM / Drizzle Kit / drizzle-typebox
 - Biome
 
 ## Prerequisites
@@ -129,6 +129,8 @@ Due raffles are drawn automatically once per minute while the API is running. A 
 - `winner_id` is `null`
 - `draw_date` is in the past
 
+If an overdue raffle has sold no tickets, it is cancelled instead of being left active without a possible winner.
+
 You can also run the draw job manually:
 
 ```bash
@@ -146,6 +148,8 @@ bun run raffles:draw
 - Raffle drawing runs through an in-process cron for simplicity. This is convenient locally, but in production it should be moved to a dedicated worker or protected by distributed locking so multiple API instances do not run the same job.
 
 - Due raffles are selected with `FOR UPDATE SKIP LOCKED`. This lets draw workers avoid blocking each other, but the current in-process cron still keeps the operational model intentionally simple.
+
+- Overdue raffles with no sold tickets are marked `cancelled`. This keeps the raffle lifecycle moving forward and avoids repeatedly processing raffles that cannot produce a winner.
 
 - Drizzle migrations are committed and used as the source of truth for database changes.
 
@@ -176,4 +180,3 @@ bun run format:write  # write formatting changes
 ## Notes
 
 - `dev:portless` can expose the app at `https://raffle-system-api.localhost` when portless is configured.
-

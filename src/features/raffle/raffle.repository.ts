@@ -79,6 +79,23 @@ export class RaffleRepository {
 			);
 	}
 
+	async markCancelled(tx: RaffleTransaction, raffleId: string): Promise<void> {
+		await tx
+			.update(raffles)
+			.set({
+				status: "cancelled",
+				updatedAt: sql`now()`,
+			})
+			.where(
+				and(
+					eq(raffles.id, raffleId),
+					eq(raffles.status, "active"),
+					isNull(raffles.winnerId),
+					eq(raffles.ticketsSold, 0),
+				),
+			);
+	}
+
 	private async findDueForDraw(tx: RaffleTransaction): Promise<DueRaffle[]> {
 		return tx
 			.select({ id: raffles.id })

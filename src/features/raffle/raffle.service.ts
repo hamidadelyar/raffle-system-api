@@ -24,6 +24,7 @@ export class RaffleService {
 					);
 
 					if (!winner) {
+						await this.raffleRepository.markCancelled(tx, raffle.id);
 						continue;
 					}
 
